@@ -1,14 +1,17 @@
 import { configureStore } from "@reduxjs/toolkit";
-// Importuj swoje slice'y tutaj
-import exampleReducer from "./features/exampleSlice/exampleSlice";
+import { setupListeners } from "@reduxjs/toolkit/query";
+import { apiSlice } from "./features/apiSlice/apiSlice";
+import { userSlice } from "./features/userSlice/userSlice";
 
 const store = configureStore({
   reducer: {
-    // Dodaj swoje slice'y tutaj
-    example: exampleReducer,
+    user: userSlice.reducer,
+    [apiSlice.reducerPath]: apiSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(apiSlice.middleware),
 });
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+setupListeners(store.dispatch);
+
 export default store;
