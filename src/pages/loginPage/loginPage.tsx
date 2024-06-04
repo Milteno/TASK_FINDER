@@ -1,19 +1,31 @@
 import React, { useState } from "react";
+
 import { useDispatch } from "react-redux";
-import { useLoginUserMutation } from "../../redux/features/apiSlice/apiSlice";
 import { loginSuccess } from "../../redux/features/userSlice/userSlice";
+import { useLoginUserMutation } from "../../redux/features/apiSlice/apiSlice";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [login] = useLoginUserMutation();
+  const [loginUser] = useLoginUserMutation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data } = await login({ email, password });
-      dispatch(loginSuccess(data));
+      const response = await loginUser({ email, password }).unwrap();
+      console.log("Login response:", response);
+      dispatch(
+        loginSuccess({
+          token: response.token,
+          username: response.user.username,
+        })
+      );
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("username", response.user.username);
+      navigate("/home");
     } catch (error) {
       console.error("Failed to login", error);
     }

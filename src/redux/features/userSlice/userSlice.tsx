@@ -1,33 +1,41 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface UserState {
-  user: { username: string } | null;
   token: string | null;
+  username: string | null;
 }
 
 const initialState: UserState = {
-  user: null,
   token: null,
+  username: null,
 };
 
-export const userSlice = createSlice({
+const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
     loginSuccess: (
       state,
-      action: PayloadAction<{ user: { username: string }; token: string }>
+      action: PayloadAction<{ token: string; username: string }>
     ) => {
-      state.user = action.payload.user;
       state.token = action.payload.token;
+      state.username = action.payload.username;
     },
     logoutSuccess: (state) => {
-      state.user = null;
       state.token = null;
+      state.username = null;
+    },
+    restoreSession: (state) => {
+      const token = localStorage.getItem("token");
+      const username = localStorage.getItem("username");
+      if (token && username) {
+        state.token = token;
+        state.username = username;
+      }
     },
   },
 });
 
-export const { loginSuccess, logoutSuccess } = userSlice.actions;
-
+export const { loginSuccess, logoutSuccess, restoreSession } =
+  userSlice.actions;
 export default userSlice.reducer;

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useRegisterUserMutation } from "../../redux/features/apiSlice/apiSlice";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../redux/features/userSlice/userSlice";
-
 const RegisterPage = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -13,8 +12,14 @@ const RegisterPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { data } = await registerUser({ username, email, password });
-      dispatch(loginSuccess(data));
+      const response = await registerUser({
+        username,
+        email,
+        password,
+      }).unwrap();
+      dispatch(loginSuccess(response));
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("username", response.user.username);
     } catch (error) {
       console.error("Failed to register", error);
     }

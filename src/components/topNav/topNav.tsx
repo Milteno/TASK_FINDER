@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import classes from "./topNav.module.scss";
 import logo from "../../images/logo_inz.png";
@@ -6,11 +6,18 @@ import { logoutSuccess } from "../../redux/features/userSlice/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const TopNav: React.FC = () => {
-  const user = useSelector((state: any) => state.user.user);
+  const { username, token } = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
+  const [user, setUser] = useState({ username, token });
+
+  useEffect(() => {
+    setUser({ username, token });
+  }, [username, token]);
 
   const handleLogout = () => {
     dispatch(logoutSuccess());
+    localStorage.removeItem("token");
+    localStorage.removeItem("username");
   };
 
   return (
@@ -34,7 +41,7 @@ const TopNav: React.FC = () => {
             <li>
               <Link to="/contact">Contact</Link>
             </li>
-            {user ? (
+            {user.token ? (
               <li>
                 <p>Welcome, {user.username}</p>
                 <button onClick={handleLogout}>Logout</button>

@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { apiSlice } from "./features/apiSlice/apiSlice";
-import { userSlice } from "./features/userSlice/userSlice";
+import userReducer from "./features/userSlice/userSlice"; // Zmiana importu
 
 const store = configureStore({
   reducer: {
-    user: userSlice.reducer,
+    user: userReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
