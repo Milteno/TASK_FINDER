@@ -16,7 +16,6 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const response = await loginUser({ email, password }).unwrap();
-      console.log("Login response:", response);
       dispatch(
         loginSuccess({
           token: response.token,

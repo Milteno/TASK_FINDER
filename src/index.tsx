@@ -10,7 +10,6 @@ import { restoreSession } from "./redux/features/userSlice/userSlice";
 const rootElement = document.getElementById("root");
 
 store.dispatch(restoreSession());
-
 if (rootElement) {
   const root = ReactDOM.createRoot(rootElement as HTMLElement);
   root.render(

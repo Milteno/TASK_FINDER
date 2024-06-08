@@ -1,23 +1,18 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
+import { Link, useNavigate } from "react-router-dom";
 import classes from "./topNav.module.scss";
 import logo from "../../images/logo_inz.png";
 import { logoutSuccess } from "../../redux/features/userSlice/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 
 const TopNav: React.FC = () => {
-  const { username, token } = useSelector((state: any) => state.user);
+  const user = useSelector((state: any) => state.user);
   const dispatch = useDispatch();
-  const [user, setUser] = useState({ username, token });
-
-  useEffect(() => {
-    setUser({ username, token });
-  }, [username, token]);
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     dispatch(logoutSuccess());
-    localStorage.removeItem("token");
-    localStorage.removeItem("username");
+    navigate("/login");
   };
 
   return (
@@ -30,10 +25,10 @@ const TopNav: React.FC = () => {
         <div>
           <ul className={classes.navLinks}>
             <li>
-              <Link to="/home">Home</Link>
+              <Link to="/map">Map</Link>
             </li>
             <li>
-              <Link to="/about">About</Link>
+              <Link to="/notes">Notes</Link>
             </li>
             <li>
               <Link to="/services">Services</Link>
@@ -43,7 +38,9 @@ const TopNav: React.FC = () => {
             </li>
             {user.token ? (
               <li>
-                <p>Welcome, {user.username}</p>
+                <p onClick={() => navigate("/user-settings")}>
+                  Welcome, {user.username}
+                </p>
                 <button onClick={handleLogout}>Logout</button>
               </li>
             ) : (

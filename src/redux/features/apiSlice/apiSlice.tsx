@@ -4,14 +4,15 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:5000",
-    prepareHeaders: (headers, { getState }) => {
+    prepareHeaders: (headers, { getState, endpoint }) => {
       const token = (getState() as any).user.token;
-      if (token) {
+      if (token && endpoint !== "getMapNotes") {
         headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
     },
   }),
+  tagTypes: ["Note"], // Dodajemy tag types
   endpoints: (builder) => ({
     registerUser: builder.mutation({
       query: (user) => ({
@@ -33,12 +34,21 @@ export const apiSlice = createApi({
         method: "POST",
         body: note,
       }),
+      invalidatesTags: ["Note"],
     }),
     getNotes: builder.query({
       query: () => ({
         url: "/notes",
         method: "GET",
       }),
+      providesTags: ["Note"],
+    }),
+    getMapNotes: builder.query({
+      query: () => ({
+        url: "/map",
+        method: "GET",
+      }),
+      providesTags: ["Note"],
     }),
     updateNote: builder.mutation({
       query: ({ id, ...note }) => ({
@@ -46,11 +56,26 @@ export const apiSlice = createApi({
         method: "PUT",
         body: note,
       }),
+      invalidatesTags: ["Note"],
     }),
     deleteNote: builder.mutation({
       query: (id) => ({
         url: `/notes/${id}`,
         method: "DELETE",
+      }),
+      invalidatesTags: ["Note"],
+    }),
+    updateUser: builder.mutation({
+      query: (user) => ({
+        url: "/update-user",
+        method: "PUT",
+        body: user,
+      }),
+    }),
+    getUser: builder.query({
+      query: () => ({
+        url: "/user",
+        method: "GET",
       }),
     }),
   }),
@@ -61,6 +86,9 @@ export const {
   useLoginUserMutation,
   useCreateNoteMutation,
   useGetNotesQuery,
+  useGetMapNotesQuery,
   useUpdateNoteMutation,
   useDeleteNoteMutation,
+  useUpdateUserMutation,
+  useGetUserQuery,
 } = apiSlice;

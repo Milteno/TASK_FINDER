@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { apiSlice } from "../apiSlice/apiSlice";
 
 interface UserState {
   token: string | null;
@@ -6,8 +7,8 @@ interface UserState {
 }
 
 const initialState: UserState = {
-  token: null,
-  username: null,
+  token: localStorage.getItem("token"),
+  username: localStorage.getItem("username"),
 };
 
 const userSlice = createSlice({
@@ -24,6 +25,8 @@ const userSlice = createSlice({
     logoutSuccess: (state) => {
       state.token = null;
       state.username = null;
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
     },
     restoreSession: (state) => {
       const token = localStorage.getItem("token");
@@ -34,8 +37,20 @@ const userSlice = createSlice({
       }
     },
   },
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      apiSlice.endpoints.loginUser.matchFulfilled,
+      (state, action) => {
+        state.token = action.payload.token;
+        state.username = action.payload.user.username;
+        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("username", action.payload.user.username);
+      }
+    );
+  },
 });
 
 export const { loginSuccess, logoutSuccess, restoreSession } =
   userSlice.actions;
+
 export default userSlice.reducer;

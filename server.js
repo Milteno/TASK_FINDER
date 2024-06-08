@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB connection
-const mongoURI = 'mongodb://127.0.0.1:27017/auth-demo'; // Użyj 127.0.0.1 zamiast localhost
+const mongoURI = 'mongodb://127.0.0.1:27017/auth-demo';
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
@@ -82,9 +82,23 @@ app.post('/notes', authMiddleware, async (req, res) => {
   }
 });
 
+// Endpoint zwracający wszystkie notatki (nie wymaga uwierzytelnienia)
+app.get('/map', async (req, res) => {
+  try {
+    const notes = await Note.find().populate('userId', 'username');
+    res.send(notes);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+// Endpoint zwracający notatki zalogowanego użytkownika
 app.get('/notes', authMiddleware, async (req, res) => {
   try {
-    const notes = await Note.find({ userId: req.user.id });
+    if (!req.user) {
+      return res.status(200).send([]);
+    }
+    const notes = await Note.find({ userId: req.user.id }).populate('userId', 'username');
     res.send(notes);
   } catch (error) {
     res.status(400).send(error.message);
@@ -103,6 +117,41 @@ app.put('/notes/:id', authMiddleware, async (req, res) => {
       return res.status(404).send('Note not found');
     }
     res.send(note);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+app.get('/user', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+
+app.put('/update-user', authMiddleware, async (req, res) => {
+  const { email, password, username } = req.body;
+  try {
+    const updatedFields = {};
+    if (email) {
+      updatedFields.email = email;
+    }
+    if (password) {
+      updatedFields.password = await bcrypt.hash(password, 10);
+    }
+    if (username) {
+      updatedFields.username = username;
+    }
+    const user = await User.findByIdAndUpdate(req.user.id, updatedFields, { new: true });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    res.send(user);
   } catch (error) {
     res.status(400).send(error.message);
   }

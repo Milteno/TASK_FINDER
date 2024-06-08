@@ -1,6 +1,9 @@
 import LoginPage from "./loginPage/loginPage";
 import MainPage from "./mainPage/mainPage";
+import MapPage from "./mapPage/mapPage";
+import NotesPage from "./notesPage/notesPage";
 import RegisterPage from "./registerPage/registerPage";
+import UserSettingsPage from "./userSettingsPage/userSettingsPage";
 
 export const ROUTES = [
   {
@@ -25,6 +28,33 @@ export const ROUTES = [
     id: "login",
     component: <LoginPage />,
     url: "login",
+    exact: true,
+    label: "",
+    linkId: "",
+    auth: false,
+  },
+  {
+    id: "map",
+    component: <MapPage />,
+    url: "map",
+    exact: true,
+    label: "",
+    linkId: "",
+    auth: false,
+  },
+  {
+    id: "notes",
+    component: <NotesPage />,
+    url: "notes",
+    exact: true,
+    label: "",
+    linkId: "",
+    auth: false,
+  },
+  {
+    id: "user-settings",
+    component: <UserSettingsPage />,
+    url: "user-settings",
     exact: true,
     label: "",
     linkId: "",
