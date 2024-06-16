@@ -1,6 +1,7 @@
 import LoginPage from "./loginPage/loginPage";
 import MainPage from "./mainPage/mainPage";
 import MapPage from "./mapPage/mapPage";
+import NoteDetails from "./notesPage/noteDetail";
 import NotesPage from "./notesPage/notesPage";
 import RegisterPage from "./registerPage/registerPage";
 import UserSettingsPage from "./userSettingsPage/userSettingsPage";
@@ -55,6 +56,15 @@ export const ROUTES = [
     id: "user-settings",
     component: <UserSettingsPage />,
     url: "user-settings",
+    exact: true,
+    label: "",
+    linkId: "",
+    auth: false,
+  },
+  {
+    id: "note-details",
+    component: <NoteDetails />,
+    url: "note/:id",
     exact: true,
     label: "",
     linkId: "",

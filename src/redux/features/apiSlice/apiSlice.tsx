@@ -12,7 +12,7 @@ export const apiSlice = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Note"], // Dodajemy tag types
+  tagTypes: ["Note"],
   endpoints: (builder) => ({
     registerUser: builder.mutation({
       query: (user) => ({
@@ -50,6 +50,12 @@ export const apiSlice = createApi({
       }),
       providesTags: ["Note"],
     }),
+    getNoteById: builder.query({
+      query: (id) => ({
+        url: `/notes/${id}`,
+        method: "GET",
+      }),
+    }),
     updateNote: builder.mutation({
       query: ({ id, ...note }) => ({
         url: `/notes/${id}`,
@@ -78,6 +84,12 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
+    verifyToken: builder.query({
+      query: () => ({
+        url: "/verify-token",
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -87,8 +99,10 @@ export const {
   useCreateNoteMutation,
   useGetNotesQuery,
   useGetMapNotesQuery,
+  useGetNoteByIdQuery,
   useUpdateNoteMutation,
   useDeleteNoteMutation,
   useUpdateUserMutation,
   useGetUserQuery,
+  useVerifyTokenQuery,
 } = apiSlice;

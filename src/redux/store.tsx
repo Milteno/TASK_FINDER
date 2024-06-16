@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import { apiSlice } from "./features/apiSlice/apiSlice";
-import userReducer from "./features/userSlice/userSlice"; // Zmiana importu
+import userReducer, { restoreSession } from "./features/userSlice/userSlice";
 
 const store = configureStore({
   reducer: {
@@ -13,5 +13,7 @@ const store = configureStore({
 });
 
 setupListeners(store.dispatch);
+
+store.dispatch(restoreSession());
 
 export default store;
