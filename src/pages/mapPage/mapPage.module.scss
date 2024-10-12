@@ -1,24 +1,134 @@
 .mapPageWrapper {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  height: 88vh;
+}
+
+.filterWrapper {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  height: 100vh;
+  padding: 10px 20px;
+  background-color: #333;
+  border-bottom: 1px solid #c3a82f;
 }
 
-.mapPageContent {
-  width: 80%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.filterBar {
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
-.note {
-  padding: 10px;
-  margin-bottom: 10px;
-  background-color: #fff;
-  border: 1px solid #ddd;
+.filterInput {
+  display: flex;
+  gap: 10px;
+}
+
+.filterInput input {
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
+  width: 200px;
+  color: #333;
+}
+
+.iconFilters {
+  display: flex;
+  gap: 10px;
+  padding-left: 2rem;
+}
+
+.icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background-color: #c3a82f;
+  cursor: pointer;
+}
+
+.icon:hover {
+  background-color: #c7b973;
+}
+
+.contentWrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.tasksList {
+  width: 30%;
+  max-height: 90vh;
+  overflow-y: hidden;
+  padding: 10px;
+}
+
+.tasksScroll {
+  max-height: calc(100vh - 160px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.tasksScroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.tasksScroll::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.tasksScroll::-webkit-scrollbar-thumb {
+  background: #c3a82f;
+  border-radius: 10px;
+}
+
+.tasksScroll::-webkit-scrollbar-thumb:hover {
+  background: #a88524;
+}
+
+.mapContainer {
+  width: 70%;
+  height: calc(100vh - 200px);
+  padding-top:0.6rem;
+}
+
+.map {
+  height: 100%;
+}
+
+.task {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  background: #fff;
+  border: 1px solid #c3a82f;
+  padding: 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: #282c34;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.task:hover {
+  background-color: #c7b973;
+  color: #282c34;
+
+  transform: translateY(-2px);
+}
+
+.task h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.task p {
+  margin: 5px 0;
+}
+.taskHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.hourlyRate {
+  font-weight: bold;
+  color: #48bb78;
 }

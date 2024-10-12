@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import classes from "./pages.module.scss";
 import { ROUTES } from "../pages/routes";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
 const Pages: React.FC = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (window.location.pathname === "/") {
+      navigate("/register");
+    }
+  }, [navigate]);
   return (
     <>
       <div className={classes.pageContent}>

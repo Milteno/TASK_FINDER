@@ -8,9 +8,10 @@ import classes from "./loginPage.module.scss";
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [loginUser, { isLoading, error }] = useLoginUserMutation();
+  const [loginUser, { isLoading }] = useLoginUserMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,16 +33,16 @@ const LoginPage: React.FC = () => {
       localStorage.setItem("firstName", response.user.firstName);
       localStorage.setItem("lastName", response.user.lastName);
       localStorage.setItem("city", response.user.city);
-      navigate("/home");
-    } catch (err) {
-      console.error("Failed to login:", err);
+      navigate("/map");
+    } catch (err: any) {
+      setError(err.data?.message || "Niepoprawny adres email lub hasło");
     }
   };
 
   return (
     <div className={classes.loginPageWrapper}>
       <div className={classes.loginPageContent}>
-        <h2>Login</h2>
+        <h2>Logowanie</h2>
         <form onSubmit={handleSubmit}>
           <div className={classes.inputGroup}>
             <label>Email</label>
@@ -53,7 +54,7 @@ const LoginPage: React.FC = () => {
             />
           </div>
           <div className={classes.inputGroup}>
-            <label>Password</label>
+            <label>Hasło</label>
             <input
               type="password"
               value={password}
@@ -62,9 +63,9 @@ const LoginPage: React.FC = () => {
             />
           </div>
           <button type="submit" disabled={isLoading}>
-            Login
+            Zaloguj
           </button>
-          {error && <p className={classes.error}>{error.toString()}</p>}
+          {error && <p className={classes.error}>{error}</p>}
         </form>
       </div>
     </div>

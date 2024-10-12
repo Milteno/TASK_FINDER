@@ -4,15 +4,15 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: "http://localhost:5000",
-    prepareHeaders: (headers, { getState, endpoint }) => {
+    prepareHeaders: (headers, { getState }) => {
       const token = (getState() as any).user.token;
-      if (token && endpoint !== "getMapNotes") {
+      if (token) {
         headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
     },
   }),
-  tagTypes: ["Note"],
+  tagTypes: ["Task", "Application"],
   endpoints: (builder) => ({
     registerUser: builder.mutation({
       query: (user) => ({
@@ -28,48 +28,48 @@ export const apiSlice = createApi({
         body: user,
       }),
     }),
-    createNote: builder.mutation({
-      query: (note) => ({
-        url: "/notes",
+    createTask: builder.mutation({
+      query: (task) => ({
+        url: "/tasks",
         method: "POST",
-        body: note,
+        body: task,
       }),
-      invalidatesTags: ["Note"],
+      invalidatesTags: ["Task"],
     }),
-    getNotes: builder.query({
+    getTasks: builder.query({
       query: () => ({
-        url: "/notes",
+        url: "/tasks",
         method: "GET",
       }),
-      providesTags: ["Note"],
+      providesTags: ["Task"],
     }),
-    getMapNotes: builder.query({
+    getMapTasks: builder.query({
       query: () => ({
         url: "/map",
         method: "GET",
       }),
-      providesTags: ["Note"],
+      providesTags: ["Task"],
     }),
-    getNoteById: builder.query({
+    getTaskById: builder.query({
       query: (id) => ({
-        url: `/notes/${id}`,
+        url: `/tasks/${id}`,
         method: "GET",
       }),
     }),
-    updateNote: builder.mutation({
-      query: ({ id, ...note }) => ({
-        url: `/notes/${id}`,
+    updateTask: builder.mutation({
+      query: ({ id, ...task }) => ({
+        url: `/tasks/${id}`,
         method: "PUT",
-        body: note,
+        body: task,
       }),
-      invalidatesTags: ["Note"],
+      invalidatesTags: ["Task"],
     }),
-    deleteNote: builder.mutation({
+    deleteTask: builder.mutation({
       query: (id) => ({
-        url: `/notes/${id}`,
+        url: `/tasks/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Note"],
+      invalidatesTags: ["Task"],
     }),
     updateUser: builder.mutation({
       query: (user) => ({
@@ -84,6 +84,16 @@ export const apiSlice = createApi({
         method: "GET",
       }),
     }),
+    getApplicationsByTaskId: builder.query({
+      query: (TaskId) => ({
+        url: `/tasks/${TaskId}/applications`,
+        method: "GET",
+      }),
+      providesTags: ["Application"],
+    }),
+    useLazyGetApplicationsByTaskIdQuery: builder.query({
+      query: (TaskId) => `/applications/${TaskId}`,
+    }),
     verifyToken: builder.query({
       query: () => ({
         url: "/verify-token",
@@ -96,13 +106,15 @@ export const apiSlice = createApi({
 export const {
   useRegisterUserMutation,
   useLoginUserMutation,
-  useCreateNoteMutation,
-  useGetNotesQuery,
-  useGetMapNotesQuery,
-  useGetNoteByIdQuery,
-  useUpdateNoteMutation,
-  useDeleteNoteMutation,
+  useCreateTaskMutation,
+  useDeleteTaskMutation,
+  useGetTasksQuery,
+  useGetMapTasksQuery,
+  useGetTaskByIdQuery,
+  useUpdateTaskMutation,
   useUpdateUserMutation,
   useGetUserQuery,
   useVerifyTokenQuery,
+  useGetApplicationsByTaskIdQuery,
+  useLazyGetApplicationsByTaskIdQuery,
 } = apiSlice;

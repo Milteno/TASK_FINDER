@@ -6,7 +6,8 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const authMiddleware = require('./src/middlewares/authMiddleware');
 const User = require('./src/models/user');
-const Note = require('./src/models/note');
+const Task = require('./src/models/task');
+const Signup = require('./src/models/signup');
 
 const app = express();
 const port = 5000;
@@ -31,17 +32,17 @@ mongoose.connect(mongoURI, {
 // Register route
 app.post('/register', async (req, res) => {
   const { username, email, password } = req.body;
-  console.log('Received registration data:', req.body);
+  console.log('Otrzymane dane użytkownika:', req.body);
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, email, password: hashedPassword });
     await user.save();
-    console.log('User registered:', user);
+    console.log('Użytkownik zarejestrowany:', user);
 
     const token = jwt.sign({ id: user._id, username: user.username }, 'secret', { expiresIn: '1h' });
     res.status(201).json({ user: { username: user.username }, token });
   } catch (error) {
-    console.error('Error registering user:', error);
+    console.error('Błąd przy tworzeniu użytkownika:', error);
     res.status(400).send(error.message);
   }
 });
@@ -52,12 +53,12 @@ app.post('/login', async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).send('User not found');
+      return res.status(400).send('Uzytkownik nie znaleziony');
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).send('Invalid credentials');
+      return res.status(400).send('Niepoprawne dane');
     }
 
     const token = jwt.sign({ id: user._id, username: user.username, email: user.email }, 'secret', { expiresIn: '1h' });
@@ -67,10 +68,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Notes routes
-app.post('/notes', authMiddleware, async (req, res) => {
-  const { title, date, time, location, phoneNumber, tasks, duration, additionalInfo, hourlyRate } = req.body;
-  const note = new Note({
+// Tasks routes
+app.post('/tasks', authMiddleware, async (req, res) => {
+  const { title, date, time, location, phoneNumber, tasks, duration, additionalInfo, hourlyRate, category } = req.body;
+  const task = new Task({
     userId: req.user.id,
     title,
     date,
@@ -81,10 +82,11 @@ app.post('/notes', authMiddleware, async (req, res) => {
     duration,
     additionalInfo,
     hourlyRate,
+    category
   });
   try {
-    await note.save();
-    res.status(201).send(note);
+    await task.save();
+    res.status(201).send(task);
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -93,61 +95,61 @@ app.post('/notes', authMiddleware, async (req, res) => {
 // Endpoint zwracający wszystkie notatki (nie wymaga uwierzytelnienia)
 app.get('/map', async (req, res) => {
   try {
-    const notes = await Note.find().populate('userId', 'username');
-    res.send(notes);
+    const tasks = await Task.find().populate('userId', 'username');
+    res.send(tasks);
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
 
-// Endpoint zwracający notatki zalogowanego użytkownika
-app.get('/notes', authMiddleware, async (req, res) => {
+app.get('/tasks', authMiddleware, async (req, res) => {
   try {
     if (!req.user) {
       return res.status(200).send([]);
     }
-    const notes = await Note.find({ userId: req.user.id }).populate('userId', 'username');
-    res.send(notes);
+    const tasks = await Task.find({ userId: req.user.id }).populate('userId', 'username');
+    res.send(tasks);
   } catch (error) {
     res.status(400).send(error.message);
   }
 });
-app.get('/notes/:id', async (req, res) => {
+
+app.get('/tasks/:id', async (req, res) => {
   try {
-    const note = await Note.findById(req.params.id).populate('userId', 'username');
-    if (!note) {
-      return res.status(404).send('Note not found');
+    const task = await Task.findById(req.params.id).populate('userId', 'username');
+    if (!task) {
+      return res.status(404).send('Task not found');
     }
-    res.send(note);
+    res.send(task);
   } catch (error) {
     res.status(500).send(error.message);
   }
 });
 
-app.put('/notes/:id', authMiddleware, async (req, res) => {
-  const { title, date, time, location, phoneNumber, tasks, duration, additionalInfo, hourlyRate } = req.body;
+app.put('/tasks/:id', authMiddleware, async (req, res) => {
+  const { title, date, time, location, phoneNumber, tasks, duration, additionalInfo, hourlyRate, category } = req.body;
   try {
-    const note = await Note.findOneAndUpdate(
+    const task = await Task.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
-      { title, date, time, location, phoneNumber, tasks, duration, additionalInfo, hourlyRate },
+      { title, date, time, location, phoneNumber, tasks, duration, additionalInfo, hourlyRate, category },
       { new: true }
     );
-    if (!note) {
-      return res.status(404).send('Note not found');
+    if (!task) {
+      return res.status(404).send('Task not found');
     }
-    res.send(note);
+    res.send(task);
   } catch (error) {
     res.status(400).send(error.message);
   }
 });
 
-app.delete('/notes/:id', authMiddleware, async (req, res) => {
+app.delete('/tasks/:id', authMiddleware, async (req, res) => {
   try {
-    const note = await Note.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
-    if (!note) {
-      return res.status(404).send('Note not found');
+    const task = await Task.findOneAndDelete({ _id: req.params.id, userId: req.user.id });
+    if (!task) {
+      return res.status(404).send('Task not found');
     }
-    res.send('Note deleted');
+    res.send('Task deleted');
   } catch (error) {
     res.status(400).send(error.message);
   }
@@ -198,7 +200,42 @@ app.put('/update-user', authMiddleware, async (req, res) => {
     res.status(400).send(error.message);
   }
 });
+app.post('/signup', authMiddleware, async (req, res) => {
+  const { taskId, ...signupData } = req.body;
+  try {
+    const existingSignup = await Signup.findOne({ taskId, userId: req.user.id });
+    if (existingSignup) {
+      return res.status(400).send('Już aplikowałeś na te ogłoszenie');
+    }
+    const newSignup = new Signup({ taskId, userId: req.user.id, ...signupData });
+    await newSignup.save();
+    res.status(201).send('Aplikacja zakończona sukcesem');
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+});
+app.get('/signup/check/:taskId', authMiddleware, async (req, res) => {
+  const { taskId } = req.params;
+  try {
+    const signup = await Signup.findOne({ taskId, userId: req.user.id });
+    if (signup) {
+      return res.json({ hasApplied: true });
+    } else {
+      return res.json({ hasApplied: false });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+});
 
+app.get('/tasks/:id/applications', authMiddleware, async (req, res) => {
+  try {
+    const applications = await Signup.find({ taskId: req.params.id }).populate('userId', 'username firstName lastName email phoneNumber');
+    res.status(200).json(applications);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
 
 
 

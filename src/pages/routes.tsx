@@ -1,8 +1,8 @@
 import LoginPage from "./loginPage/loginPage";
 import MainPage from "./mainPage/mainPage";
 import MapPage from "./mapPage/mapPage";
-import NoteDetails from "./notesPage/noteDetail";
-import NotesPage from "./notesPage/notesPage";
+import TaskDetails from "./notesPage/taskDetails";
+import TasksPage from "./notesPage/tasksPage";
 import RegisterPage from "./registerPage/registerPage";
 import UserSettingsPage from "./userSettingsPage/userSettingsPage";
 
@@ -44,9 +44,9 @@ export const ROUTES = [
     auth: false,
   },
   {
-    id: "notes",
-    component: <NotesPage />,
-    url: "notes",
+    id: "tasks",
+    component: <TasksPage />,
+    url: "tasks",
     exact: true,
     label: "",
     linkId: "",
@@ -62,9 +62,9 @@ export const ROUTES = [
     auth: false,
   },
   {
-    id: "note-details",
-    component: <NoteDetails />,
-    url: "note/:id",
+    id: "task-details",
+    component: <TaskDetails />,
+    url: "task/:id",
     exact: true,
     label: "",
     linkId: "",

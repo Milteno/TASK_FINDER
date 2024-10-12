@@ -1,0 +1,58 @@
+.tasksPageWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 88vh;
+}
+
+.tasksPageContent {
+  width: 80%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 100%;
+}
+
+.task {
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.tasksList {
+  height: 1000px;
+  overflow-y: auto;
+}
+
+button {
+  margin-top: 20px;
+}
+.applicationDetails {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.applicationDetails h3 {
+  margin-top: 0;
+}
+
+.applicationDetails h4 {
+  margin-bottom: 5px;
+}
+
+.applicationDetails p {
+  margin: 5px 0;
+}
+.createTaskButton {
+  margin: 30px 30px;
+}
